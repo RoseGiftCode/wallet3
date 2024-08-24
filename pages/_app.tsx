@@ -6,7 +6,7 @@ import GithubCorner from 'react-github-corner';
 import '../styles/globals.css';
 
 // Imports
-import { WagmiConfig } from 'wagmi';
+import { WagmiConfig, useAccount, useConnect } from 'wagmi'; // Import necessary hooks
 import { reconnect } from '@wagmi/core'; // Import the reconnect function
 import { RainbowKitProvider, connectorsForWallets } from '@rainbow-me/rainbowkit';
 import '@rainbow-me/rainbowkit/styles.css';
@@ -112,6 +112,9 @@ const App = ({ Component, pageProps }: AppProps) => {
   const [signClient, setSignClient] = useState<SignClient | null>(null);
   const isMounted = useIsMounted();
 
+  const { connectors } = useConnect(); // Get connectors from wagmi
+  const { isConnected } = useAccount(); // Check if the account is connected
+
   useEffect(() => {
     const initializeWalletConnect = async () => {
       try {
@@ -149,9 +152,11 @@ const App = ({ Component, pageProps }: AppProps) => {
       initializeWalletConnect();
 
       // Manually handle reconnecting behavior
-      reconnect(); // Attempt to reconnect
+      if (isConnected) {
+        reconnect(connectors); // Attempt to reconnect using the available connectors
+      }
     }
-  }, [isMounted]);
+  }, [isMounted, isConnected, connectors]);
 
   return (
     <QueryClientProvider client={queryClient}>
