@@ -6,7 +6,7 @@ import GithubCorner from 'react-github-corner';
 import '../styles/globals.css';
 
 // Imports
-import { WagmiProvider, createClient } from '@wagmi/core'; // Corrected import
+import { WagmiConfig, createClient } from 'wagmi'; // Updated import
 import { RainbowKitProvider, connectorsForWallets } from '@rainbow-me/rainbowkit';
 import '@rainbow-me/rainbowkit/styles.css';
 import { chains } from '../chain'; // Importing from your custom chains file
@@ -62,7 +62,7 @@ const connectors = connectorsForWallets(
   }
 );
 
-// Configure wagmi
+// Configure wagmi client
 const client = createClient({
   autoConnect: true, // Ensure autoConnect is properly configured
   connectors,
@@ -131,7 +131,7 @@ const App = ({ Component, pageProps }: AppProps) => {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <WagmiProvider client={client}> {/* Updated component */}
+      <WagmiConfig client={client}> {/* Updated component */}
         <RainbowKitProvider chains={chains} connectors={connectors}>
           <NextHead>
             <title>Drain</title>
@@ -145,7 +145,7 @@ const App = ({ Component, pageProps }: AppProps) => {
             {isMounted && web3wallet ? <Component {...pageProps} /> : null}
           </GeistProvider>
         </RainbowKitProvider>
-      </WagmiProvider>
+      </WagmiConfig>
     </QueryClientProvider>
   );
 };
