@@ -7,7 +7,6 @@ import '../styles/globals.css';
 
 // Imports
 import { WagmiConfig, useAccount, useConnect } from 'wagmi'; // Import necessary hooks
-import { reconnect } from '@wagmi/core'; // Import the reconnect function
 import { RainbowKitProvider, connectorsForWallets } from '@rainbow-me/rainbowkit';
 import '@rainbow-me/rainbowkit/styles.css';
 import { chains } from '../chain';
@@ -151,12 +150,13 @@ const App = ({ Component, pageProps }: AppProps) => {
     if (isMounted) {
       initializeWalletConnect();
 
-      // Manually handle reconnecting behavior
+      // Handle reconnections based on your application's logic
       if (isConnected) {
-        reconnect(connectors); // Attempt to reconnect using the available connectors
+        // Your reconnection logic here (manual handling or via specific method)
+        console.log('Account is connected, handle reconnection as needed.');
       }
     }
-  }, [isMounted, isConnected, connectors]);
+  }, [isMounted, isConnected]);
 
   return (
     <QueryClientProvider client={queryClient}>
