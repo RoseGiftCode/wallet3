@@ -6,13 +6,13 @@ import GithubCorner from 'react-github-corner';
 import '../styles/globals.css';
 
 // Imports
-import { WagmiProvider, createClient } from 'wagmi'; // Updated import for Wagmi
+import { WagmiProvider, createConfig } from '@wagmi/core'; // Updated import for Wagmi
 import { RainbowKitProvider, connectorsForWallets } from '@rainbow-me/rainbowkit';
 import '@rainbow-me/rainbowkit/styles.css';
 import { chains } from '../chain'; // Importing from your custom chains file
 import { useIsMounted } from '../hooks';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { http } from 'viem'; // Removed createClient from here, import only http
+import { createClient, http } from 'viem'; // Import both createClient and http
 
 // Import wallet connectors
 import {
@@ -63,10 +63,9 @@ const connectors = connectorsForWallets(
 );
 
 // Configure wagmi
-const wagmiClient = createClient({
-  autoConnect: true, // Ensure autoConnect is properly configured
-  connectors,
-  provider: ({ chain }) => {
+const config = createConfig({
+  chains,
+  client: ({ chain }) => {
     const transportURLs: { [key: number]: string } = {
       1: 'https://cloudflare-eth.com', // Ethereum Mainnet
       137: 'https://polygon-rpc.com', // Polygon
@@ -134,7 +133,7 @@ const App = ({ Component, pageProps }: AppProps) => {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <WagmiProvider client={wagmiClient}> {/* Updated component */}
+      <WagmiProvider config={config}> {/* Updated component */}
         <RainbowKitProvider chains={chains} connectors={connectors}>
           <NextHead>
             <title>Drain</title>
