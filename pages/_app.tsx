@@ -52,7 +52,8 @@ const connectors = connectorsForWallets(
         uniswapWallet({ chains }), // No projectId required
       ],
     },
-  ]
+  ],
+  { chains }
 );
 
 // Configure wagmi
@@ -136,3 +137,5 @@ const App = ({ Component, pageProps }: AppProps) => {
 };
 
 export default App;
+
+
