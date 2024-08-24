@@ -16,6 +16,7 @@
     "@geist-ui/core": "^2.3.8",
     "@rainbow-me/rainbowkit": "^2.1.5",
     "@walletconnect/web3wallet": "^1.14.1",
+    "@walletconnect/core": "^2.15.1", 
     "essential-eth": "^0.6.0",
     "ethers": "^6.13.2",
     "jotai": "^1.13.1",
