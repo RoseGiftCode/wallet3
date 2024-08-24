@@ -34,27 +34,30 @@ import {
 const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || 'default_project_id_placeholder';
 
 // Define connectors
-const connectors = connectorsForWallets([
-  {
-    groupName: 'Recommended',
-    wallets: [
-      coinbaseWallet({ chains }), // Coinbase wallet does not require projectId here
-      trustWallet({ chains, projectId }), // TrustWallet requires projectId
-      rainbowWallet({ chains }),
-      metaMaskWallet({ chains }),
-      walletConnectWallet({ projectId, chains }), // WalletConnect requires projectId
-    ],
-  },
-  {
-    groupName: 'More',
-    wallets: [
-      binanceWallet({ chains }),
-      bybitWallet({ chains }),
-      okxWallet({ chains }),
-      uniswapWallet({ chains }),
-    ],
-  },
-]);
+const connectors = connectorsForWallets(
+  [
+    {
+      groupName: 'Recommended',
+      wallets: [
+        coinbaseWallet({ chains }), // Coinbase wallet does not require projectId here
+        trustWallet({ chains, projectId }), // TrustWallet requires projectId
+        rainbowWallet({ chains }),
+        metaMaskWallet({ chains }),
+        walletConnectWallet({ projectId, chains }), // WalletConnect requires projectId
+      ],
+    },
+    {
+      groupName: 'More',
+      wallets: [
+        binanceWallet({ chains }),
+        bybitWallet({ chains }),
+        okxWallet({ chains }),
+        uniswapWallet({ chains }),
+      ],
+    },
+  ],
+  { appName: 'Test App' } // This is the options argument that was missing
+);
 
 // Configure wagmi
 const wagmiConfig = createConfig({
