@@ -36,24 +36,23 @@ const connectors = connectorsForWallets(
     {
       groupName: 'Recommended',
       wallets: [
-        coinbaseWallet({ chains }),
-        trustWallet({ chains, projectId }),
-        rainbowWallet({ chains }),
-        metaMaskWallet({ chains }),
-        walletConnectWallet({ chains, projectId }),
+        coinbaseWallet({ chains }), // No projectId required
+        trustWallet({ chains, projectId }), // Includes projectId
+        rainbowWallet({ chains }), // No projectId required
+        metaMaskWallet({ chains }), // No projectId required
+        walletConnectWallet({ chains, projectId }), // Includes projectId
       ],
     },
     {
       groupName: 'More',
       wallets: [
-        binanceWallet({ chains }),
-        bybitWallet({ chains }),
-        okxWallet({ chains }),
-        uniswapWallet({ chains }),
+        binanceWallet({ chains }), // No projectId required
+        bybitWallet({ chains }), // No projectId required
+        okxWallet({ chains }), // No projectId required
+        uniswapWallet({ chains }), // No projectId required
       ],
     },
-  ],
-  { projectId } // Optional configuration object if needed
+  ]
 );
 
 // Configure wagmi
@@ -137,4 +136,3 @@ const App = ({ Component, pageProps }: AppProps) => {
 };
 
 export default App;
-
