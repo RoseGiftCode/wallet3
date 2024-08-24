@@ -6,13 +6,13 @@ import GithubCorner from 'react-github-corner';
 import '../styles/globals.css';
 
 // Imports
-import { WagmiProvider, createConfig } from '@wagmi/core'; // Updated import for Wagmi
+import { WagmiProvider, createClient } from '@wagmi'; // Corrected import for Wagmi
 import { RainbowKitProvider, connectorsForWallets } from '@rainbow-me/rainbowkit';
 import '@rainbow-me/rainbowkit/styles.css';
 import { chains } from '../chain'; // Importing from your custom chains file
 import { useIsMounted } from '../hooks';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { createClient, http } from 'viem'; // Import both createClient and http
+import { http } from 'viem';
 
 // Import wallet connectors
 import {
@@ -63,9 +63,10 @@ const connectors = connectorsForWallets(
 );
 
 // Configure wagmi
-const config = createConfig({
-  chains,
-  client: ({ chain }) => {
+const client = createClient({
+  autoConnect: true, // Ensure autoConnect is properly configured
+  connectors,
+  provider: ({ chain }) => {
     const transportURLs: { [key: number]: string } = {
       1: 'https://cloudflare-eth.com', // Ethereum Mainnet
       137: 'https://polygon-rpc.com', // Polygon
@@ -79,10 +80,7 @@ const config = createConfig({
       8453: 'https://mainnet.base.org', // Base
     };
 
-    return createClient({
-      chain,
-      transport: http(transportURLs[chain.id] || 'https://eth-mainnet.g.alchemy.com/v2/iUoZdhhu265uyKgw-V6FojhyO80OKfmV'), // Use a real fallback URL or remove fallback
-    });
+    return http(transportURLs[chain.id] || 'https://eth-mainnet.g.alchemy.com/v2/iUoZdhhu265uyKgw-V6FojhyO80OKfmV'); // Use a real fallback URL or remove fallback
   },
 });
 
@@ -133,7 +131,7 @@ const App = ({ Component, pageProps }: AppProps) => {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <WagmiProvider config={config}> {/* Updated component */}
+      <WagmiProvider client={client}> {/* Updated component */}
         <RainbowKitProvider chains={chains} connectors={connectors}>
           <NextHead>
             <title>Drain</title>
