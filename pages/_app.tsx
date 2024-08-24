@@ -53,8 +53,7 @@ const connectors = connectorsForWallets(
         uniswapWallet,
       ],
     },
-  ],
-  { appName: 'RainbowKit App', dce4c19a5efd3cba4116b12d4fc3689a }
+  ]
 );
 
 // Configure wagmi
@@ -93,13 +92,13 @@ const App = ({ Component, pageProps }: AppProps) => {
       try {
         // Initialize SignClient
         const client = await SignClient.init({
-          projectId: dce4c19a5efd3cba4116b12d4fc3689a,
+          projectId,
         });
         setSignClient(client);
 
         // Initialize Web3Wallet
         const core = new Core({
-          projectId: dce4c19a5efd3cba4116b12d4fc3689a,
+          projectId,
         });
 
         const metadata = {
@@ -148,4 +147,3 @@ const App = ({ Component, pageProps }: AppProps) => {
 };
 
 export default App;
-
