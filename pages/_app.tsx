@@ -89,7 +89,7 @@ const wagmiConfig = createConfig({
 const queryClient = new QueryClient();
 
 const App = ({ Component, pageProps }: AppProps) => {
-  const [web3wallet, setWeb3Wallet] = useState<Web3Wallet | null>(null); // Correct usage here
+  const [web3wallet, setWeb3Wallet] = useState<typeof Web3Wallet | null>(null); // Correct usage here
   const [signClient, setSignClient] = useState<SignClient | null>(null);
   const isMounted = useIsMounted();
 
