@@ -40,7 +40,7 @@ const connectors = connectorsForWallets(
         trustWallet({ chains }), // No projectId required
         rainbowWallet({ chains }), // No projectId required
         metaMaskWallet({ chains }), // No projectId required
-        walletConnectWallet({ chains, options: { projectId } }), // Includes projectId
+        walletConnectWallet({ chains, options: { dce4c19a5efd3cba4116b12d4fc3689a } }), // Includes projectId
       ],
     },
     {
