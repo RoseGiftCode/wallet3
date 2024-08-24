@@ -54,7 +54,10 @@ const connectors = connectorsForWallets(
       ],
     },
   ],
-  { projectId } // Configuration object including projectId
+  {
+    projectId,
+    appName: 'RainbowKit App' // Add appName to the configuration object
+  }
 );
 
 // Configure wagmi
