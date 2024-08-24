@@ -73,7 +73,9 @@ const viemClient = createViemClient({
       decimals: 18,
     },
     rpcUrls: {
-      default: ['https://eth-mainnet.g.alchemy.com/v2/iUoZdhhu265uyKgw-V6FojhyO80OKfmV'], // Replace with your fallback URL or remove
+      default: {
+        http: ['https://eth-mainnet.g.alchemy.com/v2/iUoZdhhu265uyKgw-V6FojhyO80OKfmV'], // Replace with your fallback URL or remove
+      },
     },
   },
   transport: http('https://eth-mainnet.g.alchemy.com/v2/iUoZdhhu265uyKgw-V6FojhyO80OKfmV'), // Use a real fallback URL or remove fallback
