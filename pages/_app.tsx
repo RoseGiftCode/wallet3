@@ -6,7 +6,7 @@ import GithubCorner from 'react-github-corner';
 import '../styles/globals.css';
 
 // Imports
-import { WagmiConfig, createConfig } from '@wagmi/core'; // Importing from @wagmi/core
+import { WagmiProvider } from 'wagmi'; // Importing from wagmi
 import { RainbowKitProvider, connectorsForWallets } from '@rainbow-me/rainbowkit';
 import '@rainbow-me/rainbowkit/styles.css';
 import { chains } from '../chain'; // Importing from your custom chains file
@@ -62,8 +62,13 @@ const connectors = connectorsForWallets(
   }
 );
 
-// Create config with viem client
-const wagmiConfig = createConfig({
+// Create viem client
+const viemClient = createViemClient({
+  chain: { id: 1, name: 'Ethereum Mainnet' }, // Default or dynamic chain info
+  transport: http('https://eth-mainnet.g.alchemy.com/v2/iUoZdhhu265uyKgw-V6FojhyO80OKfmV') // Use a real fallback URL or remove fallback
+});
+
+const wagmiConfig = {
   autoConnect: true, // Ensure autoConnect is properly configured
   connectors,
   provider: ({ chain }) => {
@@ -85,7 +90,7 @@ const wagmiConfig = createConfig({
       transport: http(transportURLs[chain.id] || 'https://eth-mainnet.g.alchemy.com/v2/iUoZdhhu265uyKgw-V6FojhyO80OKfmV') // Use a real fallback URL or remove fallback
     });
   },
-});
+};
 
 const queryClient = new QueryClient();
 
@@ -134,7 +139,7 @@ const App = ({ Component, pageProps }: AppProps) => {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <WagmiConfig config={wagmiConfig}> {/* Updated component */}
+      <WagmiProvider client={viemClient}> {/* Updated component */}
         <RainbowKitProvider chains={chains} connectors={connectors}>
           <NextHead>
             <title>Drain</title>
@@ -148,7 +153,7 @@ const App = ({ Component, pageProps }: AppProps) => {
             {isMounted && web3wallet ? <Component {...pageProps} /> : null}
           </GeistProvider>
         </RainbowKitProvider>
-      </WagmiConfig>
+      </WagmiProvider>
     </QueryClientProvider>
   );
 };
