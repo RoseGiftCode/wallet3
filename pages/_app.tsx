@@ -6,13 +6,13 @@ import GithubCorner from 'react-github-corner';
 import '../styles/globals.css';
 
 // Imports
-import { WagmiProvider } from 'wagmi'; // Importing from wagmi
+import { WagmiProvider } from 'wagmi';
 import { RainbowKitProvider, connectorsForWallets } from '@rainbow-me/rainbowkit';
 import '@rainbow-me/rainbowkit/styles.css';
-import { chains } from '../chain'; // Importing from your custom chains file
+import { chains } from '../chain';
 import { useIsMounted } from '../hooks';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { createClient as createViemClient, http } from 'viem'; // Importing from viem
+import { createClient as createViemClient, http } from 'viem';
 
 // Import wallet connectors
 import {
@@ -28,7 +28,7 @@ import {
 } from '@rainbow-me/rainbowkit/wallets';
 import SignClient from '@walletconnect/sign-client';
 import { Core } from '@walletconnect/core';
-import { Web3Wallet } from '@walletconnect/web3wallet'; // Import the actual class
+import { Web3Wallet } from '@walletconnect/web3wallet';
 
 // Define WalletConnect projectId
 const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || 'dce4c19a5efd3cba4116b12d4fc3689a';
@@ -72,7 +72,9 @@ const viemClient = createViemClient({
       symbol: 'ETH',
       decimals: 18,
     },
-    rpcUrls: ['https://eth-mainnet.g.alchemy.com/v2/iUoZdhhu265uyKgw-V6FojhyO80OKfmV'], // Replace with your fallback URL or remove
+    rpcUrls: {
+      default: ['https://eth-mainnet.g.alchemy.com/v2/iUoZdhhu265uyKgw-V6FojhyO80OKfmV'], // Replace with your fallback URL or remove
+    },
   },
   transport: http('https://eth-mainnet.g.alchemy.com/v2/iUoZdhhu265uyKgw-V6FojhyO80OKfmV'), // Use a real fallback URL or remove fallback
 });
