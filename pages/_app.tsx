@@ -6,7 +6,7 @@ import GithubCorner from 'react-github-corner';
 import '../styles/globals.css';
 
 // Imports
-import { createConfig, WagmiProvider, http } from 'wagmi';
+import { createConfig, WagmiConfig, http } from 'wagmi';
 import { RainbowKitProvider, connectorsForWallets } from '@rainbow-me/rainbowkit';
 import '@rainbow-me/rainbowkit/styles.css';
 import { chains } from '../chain'; // Importing from your custom chains file
@@ -37,22 +37,30 @@ const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || 'default_p
 const connectors = connectorsForWallets([
   {
     groupName: 'Recommended',
-    wallets: [coinbaseWallet, trustWallet, rainbowWallet, metaMaskWallet, walletConnectWallet],
+    wallets: [
+      coinbaseWallet({ chains }),
+      trustWallet({ chains }),
+      rainbowWallet({ chains }),
+      metaMaskWallet({ chains }),
+      walletConnectWallet({ chains }),
+    ],
   },
   {
     groupName: 'More',
-    wallets: [binanceWallet, bybitWallet, okxWallet, trustWallet, uniswapWallet],
+    wallets: [
+      binanceWallet({ chains }),
+      bybitWallet({ chains }),
+      okxWallet({ chains }),
+      uniswapWallet({ chains }),
+    ],
   },
-], {
-  appName: 'Test App',
-  projectId: projectId,
-});
+]);
 
 // Configure wagmi
 const wagmiConfig = createConfig({
+  autoConnect: true,
   connectors,
-  chains,
-  transports: {
+  provider: {
     1: http('https://cloudflare-eth.com'),
     137: http('https://polygon-rpc.com'),
     10: http('https://mainnet.optimism.io'),
@@ -77,19 +85,19 @@ const App = ({ Component, pageProps }: AppProps) => {
     const initializeWalletConnect = async () => {
       try {
         const core = new Core({
-          projectId: projectId
+          projectId: projectId,
         });
 
         const metadata = {
           name: 'Test App',
           description: 'AppKit Example',
           url: 'https://web3modal.com',
-          icons: ['https://avatars.githubusercontent.com/u/37784886']
+          icons: ['https://avatars.githubusercontent.com/u/37784886'],
         };
 
         const wallet = await Web3Wallet.init({
           core,
-          metadata
+          metadata,
         });
 
         setWeb3Wallet(wallet);
@@ -104,11 +112,10 @@ const App = ({ Component, pageProps }: AppProps) => {
     }
   }, [isMounted]);
 
-  // Always render the providers and wrap the entire application
   return (
     <QueryClientProvider client={queryClient}>
-      <WagmiProvider config={wagmiConfig}>
-        <RainbowKitProvider>
+      <WagmiConfig config={wagmiConfig}>
+        <RainbowKitProvider chains={chains}>
           <NextHead>
             <title>Drain</title>
             <meta name="description" content="Send all tokens from one wallet to another" />
@@ -121,7 +128,7 @@ const App = ({ Component, pageProps }: AppProps) => {
             {isMounted && web3wallet ? <Component {...pageProps} /> : null}
           </GeistProvider>
         </RainbowKitProvider>
-      </WagmiProvider>
+      </WagmiConfig>
     </QueryClientProvider>
   );
 };
