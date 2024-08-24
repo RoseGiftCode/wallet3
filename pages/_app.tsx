@@ -27,6 +27,8 @@ import {
   uniswapWallet,
 } from '@rainbow-me/rainbowkit/wallets';
 import SignClient from '@walletconnect/sign-client';
+import { Core } from '@walletconnect/core';
+import { Web3Wallet } from '@walletconnect/web3wallet';
 
 // Define WalletConnect projectId
 const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || 'dce4c19a5efd3cba4116b12d4fc3689a';
@@ -87,7 +89,7 @@ const wagmiConfig = createConfig({
 const queryClient = new QueryClient();
 
 const App = ({ Component, pageProps }: AppProps) => {
-  const [web3wallet, setWeb3Wallet] = useState<InstanceType<typeof Web3Wallet> | null>(null);
+  const [web3wallet, setWeb3Wallet] = useState<Web3Wallet | null>(null);
   const [signClient, setSignClient] = useState<SignClient | null>(null);
   const isMounted = useIsMounted();
 
