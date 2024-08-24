@@ -89,7 +89,7 @@ const wagmiConfig = createConfig({
 const queryClient = new QueryClient();
 
 const App = ({ Component, pageProps }: AppProps) => {
-  const [web3wallet, setWeb3Wallet] = useState<typeof Web3Wallet | null>(null); // Correct usage here
+  const [web3wallet, setWeb3Wallet] = useState<Web3Wallet | null>(null); // Correct type here
   const [signClient, setSignClient] = useState<SignClient | null>(null);
   const isMounted = useIsMounted();
 
@@ -114,12 +114,12 @@ const App = ({ Component, pageProps }: AppProps) => {
           icons: ['https://avatars.githubusercontent.com/u/37784886'],
         };
 
-        const wallet = await Web3Wallet.init({ // Correct usage here
+        const wallet = await Web3Wallet.init({
           core,
           metadata,
         });
 
-        setWeb3Wallet(wallet);
+        setWeb3Wallet(wallet); // Correct usage here
         console.log('WalletConnect initialized successfully');
       } catch (error) {
         console.error('Error initializing WalletConnect:', error);
