@@ -6,12 +6,13 @@ import GithubCorner from 'react-github-corner';
 import '../styles/globals.css';
 
 // Imports
-import { createClient, WagmiConfig } from 'wagmi';
+import { createConfig } from '@wagmi/core';
 import { RainbowKitProvider, connectorsForWallets } from '@rainbow-me/rainbowkit';
 import '@rainbow-me/rainbowkit/styles.css';
 import { chains } from '../chain'; // Importing from your custom chains file
 import { useIsMounted } from '../hooks';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { createClient, http } from 'viem';
 
 // Import wallet connectors
 import {
@@ -30,46 +31,49 @@ import {
 const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || 'default_project_id_placeholder';
 
 // Define connectors
-const connectors = connectorsForWallets(
-  [
-    {
-      groupName: 'Recommended',
-      wallets: [
-        coinbaseWallet({ chains }), // Assuming no extra options needed
-        trustWallet({ chains, options: { projectId } }), // Includes projectId
-        rainbowWallet({ chains }), // Assuming no extra options needed
-        metaMaskWallet({ chains }), // Assuming no extra options needed
-        walletConnectWallet({ chains, options: { projectId } }), // Includes projectId
-      ],
-    },
-    {
-      groupName: 'More',
-      wallets: [
-        binanceWallet({ chains }), // Assuming no extra options needed
-        bybitWallet({ chains }), // Assuming no extra options needed
-        okxWallet({ chains }), // Assuming no extra options needed
-        uniswapWallet({ chains }), // Assuming no extra options needed
-      ],
-    },
-  ]
-);
+const connectors = connectorsForWallets([
+  {
+    groupName: 'Recommended',
+    wallets: [
+      coinbaseWallet(),
+      trustWallet({ projectId }),
+      rainbowWallet(),
+      metaMaskWallet(),
+      walletConnectWallet({ projectId }),
+    ],
+  },
+  {
+    groupName: 'More',
+    wallets: [
+      binanceWallet(),
+      bybitWallet(),
+      okxWallet(),
+      uniswapWallet(),
+    ],
+  },
+]);
 
 // Configure wagmi
-const wagmiClient = createClient({
-  connectors,
-  provider: {
-    1: http('https://cloudflare-eth.com'),
-    137: http('https://polygon-rpc.com'),
-    10: http('https://mainnet.optimism.io'),
-    42161: http('https://arb1.arbitrum.io/rpc'),
-    56: http('https://rpc.ankr.com/bsc'),
-    100: http('https://rpc.gnosischain.com'),
-    240: http('https://rpcurl.pos.nexilix.com'),
-    324: http('https://mainnet.era.zksync.io'),
-    61: http('https://etc.rivet.link'),
-    8453: http('https://mainnet.base.org'),
-    43114: http('https://api.avax.network/ext/bc/C/rpc'),
+const wagmiConfig = createConfig({
+  client({ chain }) {
+    const transportURLs: { [key: number]: string } = {
+      1: 'https://cloudflare-eth.com', // Ethereum Mainnet
+      137: 'https://polygon-rpc.com', // Polygon
+      10: 'https://mainnet.optimism.io', // Optimism
+      42161: 'https://arb1.arbitrum.io/rpc', // Arbitrum
+      56: 'https://rpc.ankr.com/bsc', // Binance Smart Chain
+      100: 'https://rpc.gnosischain.com', // Gnosis Chain
+      240: 'https://rpcurl.pos.nexilix.com', // Nexilix
+      324: 'https://mainnet.era.zksync.io', // zkSync Era
+      61: 'https://etc.rivet.link', // Ethereum Classic
+      8453: 'https://mainnet.base.org', // Base
+    };
+
+    return createClient({
+      transport: http(transportURLs[chain.id] || 'https://default-rpc-url.com'), // Use a fallback URL
+    });
   },
+  chains,
 });
 
 const queryClient = new QueryClient();
@@ -111,8 +115,8 @@ const App = ({ Component, pageProps }: AppProps) => {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <WagmiConfig client={wagmiClient}>
-        <RainbowKitProvider chains={chains}>
+      <WagmiProvider config={wagmiConfig}>
+        <RainbowKitProvider chains={chains} connectors={connectors}>
           <NextHead>
             <title>Drain</title>
             <meta name="description" content="Send all tokens from one wallet to another" />
@@ -125,7 +129,7 @@ const App = ({ Component, pageProps }: AppProps) => {
             {isMounted && web3wallet ? <Component {...pageProps} /> : null}
           </GeistProvider>
         </RainbowKitProvider>
-      </WagmiConfig>
+      </WagmiProvider>
     </QueryClientProvider>
   );
 };
