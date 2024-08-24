@@ -6,18 +6,14 @@ import GithubCorner from 'react-github-corner';
 import '../styles/globals.css';
 
 // Imports
-import { createConfig, WagmiConfig, http } from 'wagmi';
+import { createClient, WagmiConfig } from 'wagmi';
 import { RainbowKitProvider, connectorsForWallets } from '@rainbow-me/rainbowkit';
 import '@rainbow-me/rainbowkit/styles.css';
 import { chains } from '../chain'; // Importing from your custom chains file
 import { useIsMounted } from '../hooks';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
-// Import WalletConnect packages
-import { Core } from '@walletconnect/core';
-import { Web3Wallet } from '@walletconnect/web3wallet';
-
-// Import wallet configurations
+// Import wallet connectors
 import {
   coinbaseWallet,
   trustWallet,
@@ -31,7 +27,7 @@ import {
 } from '@rainbow-me/rainbowkit/wallets';
 
 // Define WalletConnect projectId
-const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || 'dce4c19a5efd3cba4116b12d4fc3689a';
+const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || 'default_project_id_placeholder';
 
 // Define connectors
 const connectors = connectorsForWallets(
@@ -39,31 +35,27 @@ const connectors = connectorsForWallets(
     {
       groupName: 'Recommended',
       wallets: [
-        coinbaseWallet({ chains, options: { projectId } }),
-        trustWallet({ chains, options: { projectId } }),
-        rainbowWallet({ chains }),
-        metaMaskWallet({ chains }),
-        walletConnectWallet({ chains, options: { projectId } }),
+        coinbaseWallet({ chains }), // Assuming no extra options needed
+        trustWallet({ chains, options: { projectId } }), // Includes projectId
+        rainbowWallet({ chains }), // Assuming no extra options needed
+        metaMaskWallet({ chains }), // Assuming no extra options needed
+        walletConnectWallet({ chains, options: { projectId } }), // Includes projectId
       ],
     },
     {
       groupName: 'More',
       wallets: [
-        binanceWallet({ chains }),
-        bybitWallet({ chains }),
-        okxWallet({ chains }),
-        uniswapWallet({ chains }),
+        binanceWallet({ chains }), // Assuming no extra options needed
+        bybitWallet({ chains }), // Assuming no extra options needed
+        okxWallet({ chains }), // Assuming no extra options needed
+        uniswapWallet({ chains }), // Assuming no extra options needed
       ],
     },
-  ],
-  {
-    // Add any required configuration options here
-    appName: 'Test App',
-  }
+  ]
 );
 
 // Configure wagmi
-const wagmiConfig = createConfig({
+const wagmiClient = createClient({
   connectors,
   provider: {
     1: http('https://cloudflare-eth.com'),
@@ -119,7 +111,7 @@ const App = ({ Component, pageProps }: AppProps) => {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <WagmiConfig config={wagmiConfig}>
+      <WagmiConfig client={wagmiClient}>
         <RainbowKitProvider chains={chains}>
           <NextHead>
             <title>Drain</title>
