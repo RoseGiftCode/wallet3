@@ -6,13 +6,13 @@ import GithubCorner from 'react-github-corner';
 import '../styles/globals.css';
 
 // Imports
-import { createConfig } from '@wagmi/core';
+import { WagmiProvider, createClient } from 'wagmi'; // Updated import for Wagmi
 import { RainbowKitProvider, connectorsForWallets } from '@rainbow-me/rainbowkit';
 import '@rainbow-me/rainbowkit/styles.css';
 import { chains } from '../chain'; // Importing from your custom chains file
 import { useIsMounted } from '../hooks';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { createClient, http } from 'viem';
+import { http } from 'viem'; // Removed createClient from here, import only http
 
 // Import wallet connectors
 import {
@@ -31,7 +31,7 @@ import { Core } from '@walletconnect/core';
 import { Web3Wallet } from '@walletconnect/web3wallet'; // Import the actual class
 
 // Define WalletConnect projectId
-const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || 'your_project_id';
+const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || 'dce4c19a5efd3cba4116b12d4fc3689a';
 
 // Define connectors
 const connectors = connectorsForWallets(
@@ -63,9 +63,10 @@ const connectors = connectorsForWallets(
 );
 
 // Configure wagmi
-const wagmiConfig = createConfig({
-  chains,
-  client({ chain }) {
+const wagmiClient = createClient({
+  autoConnect: true, // Ensure autoConnect is properly configured
+  connectors,
+  provider: ({ chain }) => {
     const transportURLs: { [key: number]: string } = {
       1: 'https://cloudflare-eth.com', // Ethereum Mainnet
       137: 'https://polygon-rpc.com', // Polygon
@@ -133,7 +134,7 @@ const App = ({ Component, pageProps }: AppProps) => {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <WagmiProvider config={wagmiConfig}>
+      <WagmiProvider client={wagmiClient}> {/* Updated component */}
         <RainbowKitProvider chains={chains} connectors={connectors}>
           <NextHead>
             <title>Drain</title>
