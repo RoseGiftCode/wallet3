@@ -34,27 +34,33 @@ import {
 const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || 'default_project_id_placeholder';
 
 // Define connectors
-const connectors = connectorsForWallets([
+const connectors = connectorsForWallets(
+  [
+    {
+      groupName: 'Recommended',
+      wallets: [
+        coinbaseWallet({ chains }),
+        trustWallet({ chains }),
+        rainbowWallet({ chains }),
+        metaMaskWallet({ chains }),
+        walletConnectWallet({ chains }),
+      ],
+    },
+    {
+      groupName: 'More',
+      wallets: [
+        binanceWallet({ chains }),
+        bybitWallet({ chains }),
+        okxWallet({ chains }),
+        uniswapWallet({ chains }),
+      ],
+    },
+  ],
   {
-    groupName: 'Recommended',
-    wallets: [
-      coinbaseWallet({ chains }),
-      trustWallet({ chains }),
-      rainbowWallet({ chains }),
-      metaMaskWallet({ chains }),
-      walletConnectWallet({ chains }),
-    ],
-  },
-  {
-    groupName: 'More',
-    wallets: [
-      binanceWallet({ chains }),
-      bybitWallet({ chains }),
-      okxWallet({ chains }),
-      uniswapWallet({ chains }),
-    ],
-  },
-]);
+    appName: 'Test App',
+    projectId: projectId,
+  }
+);
 
 // Configure wagmi
 const wagmiConfig = createConfig({
