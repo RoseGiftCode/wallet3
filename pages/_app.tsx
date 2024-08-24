@@ -6,7 +6,8 @@ import GithubCorner from 'react-github-corner';
 import '../styles/globals.css';
 
 // Imports
-import { WagmiConfig, useClient } from 'wagmi';
+import { WagmiConfig } from 'wagmi';
+import { reconnect } from '@wagmi/core'; // Import the reconnect function
 import { RainbowKitProvider, connectorsForWallets } from '@rainbow-me/rainbowkit';
 import '@rainbow-me/rainbowkit/styles.css';
 import { chains } from '../chain';
@@ -110,7 +111,6 @@ const App = ({ Component, pageProps }: AppProps) => {
   const [web3wallet, setWeb3Wallet] = useState<InstanceType<typeof Web3Wallet> | null>(null);
   const [signClient, setSignClient] = useState<SignClient | null>(null);
   const isMounted = useIsMounted();
-  const wagmiClient = useClient();
 
   useEffect(() => {
     const initializeWalletConnect = async () => {
@@ -148,12 +148,10 @@ const App = ({ Component, pageProps }: AppProps) => {
     if (isMounted) {
       initializeWalletConnect();
 
-      // Manually handle reconnecting behavior, ensuring wagmiClient is defined
-      if (wagmiClient) {
-        wagmiClient.reconnect();
-      }
+      // Manually handle reconnecting behavior
+      reconnect(); // Attempt to reconnect
     }
-  }, [isMounted, wagmiClient]); // Add wagmiClient to the dependency array
+  }, [isMounted]);
 
   return (
     <QueryClientProvider client={queryClient}>
