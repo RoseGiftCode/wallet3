@@ -39,11 +39,11 @@ const connectors = connectorsForWallets(
     {
       groupName: 'Recommended',
       wallets: [
-        coinbaseWallet({ chains }),
-        trustWallet({ chains }),
+        coinbaseWallet({ chains, projectId }),
+        trustWallet({ chains, projectId }),
         rainbowWallet({ chains }),
         metaMaskWallet({ chains }),
-        walletConnectWallet({ chains }),
+        walletConnectWallet({ chains, projectId }),
       ],
     },
     {
