@@ -26,6 +26,7 @@ import {
   okxWallet,
   uniswapWallet,
 } from '@rainbow-me/rainbowkit/wallets';
+import SignClient from '@walletconnect/sign-client';
 
 // Define WalletConnect projectId
 const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || 'dce4c19a5efd3cba4116b12d4fc3689a';
@@ -36,24 +37,24 @@ const connectors = connectorsForWallets(
     {
       groupName: 'Recommended',
       wallets: [
-        coinbaseWallet({ chains }), // No projectId required
-        trustWallet({ chains }), // No projectId required
-        rainbowWallet({ chains }), // No projectId required
-        metaMaskWallet({ chains }), // No projectId required
-        walletConnectWallet({ chains, options: { dce4c19a5efd3cba4116b12d4fc3689a } }), // Includes projectId
+        coinbaseWallet,
+        trustWallet,
+        rainbowWallet,
+        metaMaskWallet,
+        walletConnectWallet,
       ],
     },
     {
-      groupName: 'More',
+      groupName: 'Others',
       wallets: [
-        binanceWallet({ chains }), // No projectId required
-        bybitWallet({ chains }), // No projectId required
-        okxWallet({ chains }), // No projectId required
-        uniswapWallet({ chains }), // No projectId required
+        binanceWallet,
+        bybitWallet,
+        okxWallet,
+        uniswapWallet,
       ],
     },
   ],
-  { chains }
+  { appName: 'RainbowKit App', dce4c19a5efd3cba4116b12d4fc3689a }
 );
 
 // Configure wagmi
@@ -84,13 +85,21 @@ const queryClient = new QueryClient();
 
 const App = ({ Component, pageProps }: AppProps) => {
   const [web3wallet, setWeb3Wallet] = useState<InstanceType<typeof Web3Wallet> | null>(null);
+  const [signClient, setSignClient] = useState<SignClient | null>(null);
   const isMounted = useIsMounted();
 
   useEffect(() => {
     const initializeWalletConnect = async () => {
       try {
+        // Initialize SignClient
+        const client = await SignClient.init({
+          projectId: dce4c19a5efd3cba4116b12d4fc3689a,
+        });
+        setSignClient(client);
+
+        // Initialize Web3Wallet
         const core = new Core({
-          projectId: projectId,
+          projectId: dce4c19a5efd3cba4116b12d4fc3689a,
         });
 
         const metadata = {
@@ -119,19 +128,21 @@ const App = ({ Component, pageProps }: AppProps) => {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <RainbowKitProvider chains={chains} connectors={connectors}>
-        <NextHead>
-          <title>Drain</title>
-          <meta name="description" content="Send all tokens from one wallet to another" />
-          <link rel="icon" href="/favicon.ico" />
-        </NextHead>
-        <GeistProvider>
-          <CssBaseline />
-          <GithubCorner href="https://github.com/dawsbot/drain" size="140" bannerColor="#e056fd" />
-          {/* Conditionally render the main component based on wallet initialization */}
-          {isMounted && web3wallet ? <Component {...pageProps} /> : null}
-        </GeistProvider>
-      </RainbowKitProvider>
+      <WagmiProvider config={wagmiConfig}>
+        <RainbowKitProvider chains={chains} connectors={connectors}>
+          <NextHead>
+            <title>Drain</title>
+            <meta name="description" content="Send all tokens from one wallet to another" />
+            <link rel="icon" href="/favicon.ico" />
+          </NextHead>
+          <GeistProvider>
+            <CssBaseline />
+            <GithubCorner href="https://github.com/dawsbot/drain" size="140" bannerColor="#e056fd" />
+            {/* Conditionally render the main component based on wallet initialization */}
+            {isMounted && web3wallet ? <Component {...pageProps} /> : null}
+          </GeistProvider>
+        </RainbowKitProvider>
+      </WagmiProvider>
     </QueryClientProvider>
   );
 };
