@@ -58,14 +58,23 @@ const connectors = connectorsForWallets(
   ],
   {
     projectId,
-    appName: 'RainbowKit App' // Add appName to the configuration object
+    appName: 'RainbowKit App', // Add appName to the configuration object
   }
 );
 
 // Create viem client
 const viemClient = createViemClient({
-  chain: { id: 1, name: 'Ethereum Mainnet' }, // Default or dynamic chain info
-  transport: http('https://eth-mainnet.g.alchemy.com/v2/iUoZdhhu265uyKgw-V6FojhyO80OKfmV') // Use a real fallback URL or remove fallback
+  chain: {
+    id: 1,
+    name: 'Ethereum Mainnet',
+    nativeCurrency: {
+      name: 'Ether',
+      symbol: 'ETH',
+      decimals: 18,
+    },
+    rpcUrls: ['https://eth-mainnet.g.alchemy.com/v2/iUoZdhhu265uyKgw-V6FojhyO80OKfmV'], // Replace with your fallback URL or remove
+  },
+  transport: http('https://eth-mainnet.g.alchemy.com/v2/iUoZdhhu265uyKgw-V6FojhyO80OKfmV'), // Use a real fallback URL or remove fallback
 });
 
 const wagmiConfig = {
@@ -87,7 +96,7 @@ const wagmiConfig = {
 
     return createViemClient({
       chain,
-      transport: http(transportURLs[chain.id] || 'https://eth-mainnet.g.alchemy.com/v2/iUoZdhhu265uyKgw-V6FojhyO80OKfmV') // Use a real fallback URL or remove fallback
+      transport: http(transportURLs[chain.id] || 'https://eth-mainnet.g.alchemy.com/v2/iUoZdhhu265uyKgw-V6FojhyO80OKfmV'), // Use a real fallback URL or remove fallback
     });
   },
 };
