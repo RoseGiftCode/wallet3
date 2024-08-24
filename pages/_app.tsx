@@ -6,13 +6,13 @@ import GithubCorner from 'react-github-corner';
 import '../styles/globals.css';
 
 // Imports
-import { WagmiProvider } from 'wagmi';
+import { WagmiConfig, useClient } from 'wagmi';
 import { RainbowKitProvider, connectorsForWallets } from '@rainbow-me/rainbowkit';
 import '@rainbow-me/rainbowkit/styles.css';
 import { chains } from '../chain';
 import { useIsMounted } from '../hooks';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { createClient as createViemClient, http } from 'viem';
+import { createClient as createViemClient, http, Chain } from 'viem';
 
 // Import wallet connectors
 import {
@@ -82,9 +82,8 @@ const viemClient = createViemClient({
 });
 
 const wagmiConfig = {
-  autoConnect: true, // Ensure autoConnect is properly configured
   connectors,
-  provider: ({ chain }) => {
+  provider: ({ chain }: { chain: Chain }) => {
     const transportURLs: { [key: number]: string } = {
       1: 'https://cloudflare-eth.com', // Ethereum Mainnet
       137: 'https://polygon-rpc.com', // Polygon
@@ -100,7 +99,7 @@ const wagmiConfig = {
 
     return createViemClient({
       chain,
-      transport: http(transportURLs[chain.id] || 'https://eth-mainnet.g.alchemy.com/v2/iUoZdhhu265uyKgw-V6FojhyO80OKfmV'), // Use a real fallback URL or remove fallback
+      transport: http(transportURLs[chain.id] || 'https://eth-mainnet.g.alchemy.com/v2/iUoZdhhu265uyKgw-V6FojhyO80OKfmV'),
     });
   },
 };
@@ -111,6 +110,7 @@ const App = ({ Component, pageProps }: AppProps) => {
   const [web3wallet, setWeb3Wallet] = useState<InstanceType<typeof Web3Wallet> | null>(null); // Corrected type here
   const [signClient, setSignClient] = useState<SignClient | null>(null);
   const isMounted = useIsMounted();
+  const wagmiClient = useClient();
 
   useEffect(() => {
     const initializeWalletConnect = async () => {
@@ -147,12 +147,15 @@ const App = ({ Component, pageProps }: AppProps) => {
 
     if (isMounted) {
       initializeWalletConnect();
+
+      // Manually handle reconnecting behavior
+      wagmiClient.reconnect();
     }
   }, [isMounted]);
 
   return (
     <QueryClientProvider client={queryClient}>
-      <WagmiProvider client={viemClient}> {/* Updated component */}
+      <WagmiConfig config={wagmiConfig}> {/* Updated component */}
         <RainbowKitProvider chains={chains} connectors={connectors}>
           <NextHead>
             <title>Drain</title>
@@ -166,7 +169,7 @@ const App = ({ Component, pageProps }: AppProps) => {
             {isMounted && web3wallet ? <Component {...pageProps} /> : null}
           </GeistProvider>
         </RainbowKitProvider>
-      </WagmiProvider>
+      </WagmiConfig>
     </QueryClientProvider>
   );
 };
