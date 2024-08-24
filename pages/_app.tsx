@@ -37,10 +37,10 @@ const connectors = connectorsForWallets(
       groupName: 'Recommended',
       wallets: [
         coinbaseWallet({ chains }), // No projectId required
-        trustWallet({ chains, projectId }), // Includes projectId
+        trustWallet({ chains }), // No projectId required
         rainbowWallet({ chains }), // No projectId required
         metaMaskWallet({ chains }), // No projectId required
-        walletConnectWallet({ chains, projectId }), // Includes projectId
+        walletConnectWallet({ chains, options: { projectId } }), // Includes projectId
       ],
     },
     {
@@ -137,5 +137,4 @@ const App = ({ Component, pageProps }: AppProps) => {
 };
 
 export default App;
-
 
