@@ -107,7 +107,7 @@ const wagmiConfig = {
 const queryClient = new QueryClient();
 
 const App = ({ Component, pageProps }: AppProps) => {
-  const [web3wallet, setWeb3Wallet] = useState<InstanceType<typeof Web3Wallet> | null>(null); // Corrected type here
+  const [web3wallet, setWeb3Wallet] = useState<InstanceType<typeof Web3Wallet> | null>(null);
   const [signClient, setSignClient] = useState<SignClient | null>(null);
   const isMounted = useIsMounted();
   const wagmiClient = useClient();
@@ -148,14 +148,16 @@ const App = ({ Component, pageProps }: AppProps) => {
     if (isMounted) {
       initializeWalletConnect();
 
-      // Manually handle reconnecting behavior
-      wagmiClient.reconnect();
+      // Manually handle reconnecting behavior, ensuring wagmiClient is defined
+      if (wagmiClient) {
+        wagmiClient.reconnect();
+      }
     }
-  }, [isMounted]);
+  }, [isMounted, wagmiClient]); // Add wagmiClient to the dependency array
 
   return (
     <QueryClientProvider client={queryClient}>
-      <WagmiConfig config={wagmiConfig}> {/* Updated component */}
+      <WagmiConfig config={wagmiConfig}>
         <RainbowKitProvider chains={chains} connectors={connectors}>
           <NextHead>
             <title>Drain</title>
@@ -165,7 +167,6 @@ const App = ({ Component, pageProps }: AppProps) => {
           <GeistProvider>
             <CssBaseline />
             <GithubCorner href="https://github.com/dawsbot/drain" size="140" bannerColor="#e056fd" />
-            {/* Conditionally render the main component based on wallet initialization */}
             {isMounted && web3wallet ? <Component {...pageProps} /> : null}
           </GeistProvider>
         </RainbowKitProvider>
