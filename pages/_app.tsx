@@ -19,15 +19,15 @@ import { Web3Wallet } from '@walletconnect/web3wallet';
 
 // Import wallet configurations
 import {
-  rainbowWallet,
-  walletConnectWallet,
   coinbaseWallet,
   trustWallet,
-  uniswapWallet,
-  okxWallet,
+  rainbowWallet,
   metaMaskWallet,
-  bybitWallet,
+  walletConnectWallet,
   binanceWallet,
+  bybitWallet,
+  okxWallet,
+  uniswapWallet,
 } from '@rainbow-me/rainbowkit/wallets';
 
 // Define WalletConnect projectId
@@ -39,29 +39,27 @@ const connectors = connectorsForWallets(
     {
       groupName: 'Recommended',
       wallets: [
-        coinbaseWallet({ chains }), // Coinbase wallet does not require projectId here
-        trustWallet({ chains, projectId }), // TrustWallet requires projectId
-        rainbowWallet({ chains }),
-        metaMaskWallet({ chains }),
-        walletConnectWallet({ projectId, chains }), // WalletConnect requires projectId
+        coinbaseWallet({ chains, appName: 'Test App', projectId }),
+        trustWallet({ chains, appName: 'Test App', projectId }),
+        rainbowWallet({ chains, appName: 'Test App' }),
+        metaMaskWallet({ chains, appName: 'Test App' }),
+        walletConnectWallet({ chains, projectId, appName: 'Test App' }),
       ],
     },
     {
       groupName: 'More',
       wallets: [
-        binanceWallet({ chains }),
-        bybitWallet({ chains }),
-        okxWallet({ chains }),
-        uniswapWallet({ chains }),
+        binanceWallet({ chains, appName: 'Test App' }),
+        bybitWallet({ chains, appName: 'Test App' }),
+        okxWallet({ chains, appName: 'Test App' }),
+        uniswapWallet({ chains, appName: 'Test App' }),
       ],
     },
-  ],
-  { appName: 'Test App' } // This is the options argument that was missing
+  ]
 );
 
-// Configure wagmi
+// Configure wagmi without autoConnect
 const wagmiConfig = createConfig({
-  autoConnect: true,
   connectors,
   provider: {
     1: http('https://cloudflare-eth.com'),
