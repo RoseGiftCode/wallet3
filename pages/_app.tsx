@@ -53,7 +53,8 @@ const connectors = connectorsForWallets(
         uniswapWallet,
       ],
     },
-  ]
+  ],
+  { appName: 'RainbowKit App' } // Optional configuration object
 );
 
 // Configure wagmi
