@@ -35,26 +35,27 @@ const connectors = connectorsForWallets([
   {
     groupName: 'Recommended',
     wallets: [
-      coinbaseWallet(),
-      trustWallet({ projectId }),
-      rainbowWallet(),
-      metaMaskWallet(),
-      walletConnectWallet({ projectId }),
+      coinbaseWallet({ chains }),
+      trustWallet({ chains, projectId }),
+      rainbowWallet({ chains }),
+      metaMaskWallet({ chains }),
+      walletConnectWallet({ chains, projectId }),
     ],
   },
   {
     groupName: 'More',
     wallets: [
-      binanceWallet(),
-      bybitWallet(),
-      okxWallet(),
-      uniswapWallet(),
+      binanceWallet({ chains }),
+      bybitWallet({ chains }),
+      okxWallet({ chains }),
+      uniswapWallet({ chains }),
     ],
   },
 ]);
 
 // Configure wagmi
 const wagmiConfig = createConfig({
+  chains,
   client({ chain }) {
     const transportURLs: { [key: number]: string } = {
       1: 'https://cloudflare-eth.com', // Ethereum Mainnet
@@ -70,10 +71,10 @@ const wagmiConfig = createConfig({
     };
 
     return createClient({
-      transport: http(transportURLs[chain.id] || 'https://eth-mainnet.g.alchemy.com/v2/iUoZdhhu265uyKgw-V6FojhyO80OKfmV'), // Use a fallback URL
+      chain,
+      transport: http(transportURLs[chain.id] || 'https://eth-mainnet.g.alchemy.com/v2/iUoZdhhu265uyKgw-V6FojhyO80OKfmV'), // Use a real fallback URL or remove fallback
     });
   },
-  chains,
 });
 
 const queryClient = new QueryClient();
@@ -115,21 +116,19 @@ const App = ({ Component, pageProps }: AppProps) => {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <WagmiProvider config={wagmiConfig}>
-        <RainbowKitProvider chains={chains} connectors={connectors}>
-          <NextHead>
-            <title>Drain</title>
-            <meta name="description" content="Send all tokens from one wallet to another" />
-            <link rel="icon" href="/favicon.ico" />
-          </NextHead>
-          <GeistProvider>
-            <CssBaseline />
-            <GithubCorner href="https://github.com/dawsbot/drain" size="140" bannerColor="#e056fd" />
-            {/* Conditionally render the main component based on wallet initialization */}
-            {isMounted && web3wallet ? <Component {...pageProps} /> : null}
-          </GeistProvider>
-        </RainbowKitProvider>
-      </WagmiProvider>
+      <RainbowKitProvider chains={chains} connectors={connectors}>
+        <NextHead>
+          <title>Drain</title>
+          <meta name="description" content="Send all tokens from one wallet to another" />
+          <link rel="icon" href="/favicon.ico" />
+        </NextHead>
+        <GeistProvider>
+          <CssBaseline />
+          <GithubCorner href="https://github.com/dawsbot/drain" size="140" bannerColor="#e056fd" />
+          {/* Conditionally render the main component based on wallet initialization */}
+          {isMounted && web3wallet ? <Component {...pageProps} /> : null}
+        </GeistProvider>
+      </RainbowKitProvider>
     </QueryClientProvider>
   );
 };
