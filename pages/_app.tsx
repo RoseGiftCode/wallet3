@@ -6,13 +6,13 @@ import GithubCorner from 'react-github-corner';
 import '../styles/globals.css';
 
 // Imports
-import { WagmiConfig, createClient } from 'wagmi'; // Updated import
+import { WagmiConfig, createConfig } from '@wagmi/core'; // Importing from @wagmi/core
 import { RainbowKitProvider, connectorsForWallets } from '@rainbow-me/rainbowkit';
 import '@rainbow-me/rainbowkit/styles.css';
 import { chains } from '../chain'; // Importing from your custom chains file
 import { useIsMounted } from '../hooks';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { http } from 'viem';
+import { createClient as createViemClient, http } from 'viem'; // Importing from viem
 
 // Import wallet connectors
 import {
@@ -62,8 +62,8 @@ const connectors = connectorsForWallets(
   }
 );
 
-// Configure wagmi client
-const client = createClient({
+// Create config with viem client
+const wagmiConfig = createConfig({
   autoConnect: true, // Ensure autoConnect is properly configured
   connectors,
   provider: ({ chain }) => {
@@ -80,7 +80,10 @@ const client = createClient({
       8453: 'https://mainnet.base.org', // Base
     };
 
-    return http(transportURLs[chain.id] || 'https://eth-mainnet.g.alchemy.com/v2/iUoZdhhu265uyKgw-V6FojhyO80OKfmV'); // Use a real fallback URL or remove fallback
+    return createViemClient({
+      chain,
+      transport: http(transportURLs[chain.id] || 'https://eth-mainnet.g.alchemy.com/v2/iUoZdhhu265uyKgw-V6FojhyO80OKfmV') // Use a real fallback URL or remove fallback
+    });
   },
 });
 
@@ -131,7 +134,7 @@ const App = ({ Component, pageProps }: AppProps) => {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <WagmiConfig client={client}> {/* Updated component */}
+      <WagmiConfig config={wagmiConfig}> {/* Updated component */}
         <RainbowKitProvider chains={chains} connectors={connectors}>
           <NextHead>
             <title>Drain</title>
